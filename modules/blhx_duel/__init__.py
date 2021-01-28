@@ -42,9 +42,6 @@ Addgirlsuccess = [
 ]
 
 
-_blhx_data = import_cdn("https://raw.githubusercontent.com/HMScygnet/_blhx_data/master/_blhx_data.py")
-
-
 # noinspection SqlResolve
 class RecordDAO:
     def __init__(self, db_path):
