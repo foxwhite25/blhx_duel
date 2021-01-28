@@ -25,20 +25,19 @@ SIGN_BONUS = 10  # 签到获得量
 GACHA_COST = 30  # 抽老婆需求
 ZERO_GET_AMOUNT = 5  # 没钱补给量
 Addgirlfail = [
-    '你参加了一场指挥官舞会，热闹的舞会场今天竟然没人同你跳舞。',
-    '你邀请到了心仪的舰娘跳舞，可是跳舞时却踩掉了她的鞋，她生气的离开了。',
-    '你为这次舞会准备了很久，结果一不小心在桌子上睡着了，醒来时只看到了过期的邀请函。',
-    '你参加了一场指挥官舞会，可是舞会上只有一名男性向你一直眨眼。',
-    '你准备参加一场指挥官舞会，可惜因为忘记穿礼服，被拦在了门外。',
-    '你沉浸在舞会的美食之中，忘了此行的目的。',
-    '你本准备参加舞会，却被会长拉去出了一晚上刀。'
+    '你把红尖尖换成了魔方，但是却找不到舰娘',
+    '你找到了小加加，但是因为你说她是钢板，她生气的离开了。',
+    '你为这次大建准备了很久，结果一不小心在桌子上睡着了，醒来时只看到了过期的邀请函。',
+    '你参加了大建，可是大建上只有另一名指挥官向你一直眨眼。',
+    '你准备参加大建，可惜因为忘记带红尖尖，被拦在了门外。',
+    '你花掉了所有的红尖尖，领了所有存的月卡，依然没有遇到你想要的舰娘。',
+    '大建失败突然进入贤者模式，然后悟出一个道理. 为什么要头铁呢？'
 ]
 Addgirlsuccess = [
-    '你参加了一场指挥官舞会，你优雅的舞姿让每位年轻女孩都望向了你。',
-    '你参加了一场指挥官舞会，你的帅气使你成为了舞会的宠儿。',
-    '你在舞会门口就遇到了一位女孩，你挽着她的手走进了舞会。',
-    '你在舞会的闲聊中无意中谈到了自己显赫的家室，你成为了舞会的宠儿。',
-    '没有人比你更懂舞会，每一个女孩都为你的风度倾倒。'
+    '你参加了大建，你的红尖尖让每位舰娘都望向了你（特别是明石）。',
+    '你参加了大建，成功的抽到了想要的舰娘。',
+    '你在大建中提到了自己的。',
+    '没有人比你更懂大建，每一个舰娘都能够抽出来。'
 ]
 
 
@@ -712,7 +711,7 @@ async def inquire_noble(bot, ev: CQEvent):
         await bot.send(ev, msg, at_sender=True)
     else:
         for cid in cidlist:
-            chara_blhxlist.append(chara_blhx.chara_blhx(cid, 0, 0))
+            chara_blhxlist.append(chara_blhx.chara(cid, 0, 0))
         if cidnum <= 7:
 
             res = chara_blhx.gen_team_pic(chara_blhxlist, star_slot_verbose=False)
@@ -764,7 +763,7 @@ async def add_girl(bot, ev: CQEvent):
             return
         score = score_counter._get_score(gid, uid)
         if score < GACHA_COST:
-            msg = '您的红尖尖不足{GACHA_COST}哦。'
+            msg = f'您的红尖尖不足{GACHA_COST}哦。'
             await bot.send(ev, msg, at_sender=True)
             return
         newgirllist = get_newgirl_list(gid)
