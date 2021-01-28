@@ -5,10 +5,11 @@ import random
 import sqlite3
 from datetime import datetime, timedelta
 from io import BytesIO
+import importlib
 
 import requests
 from hoshino import Service, priv
-from hoshino.modules.priconne import chara
+from hoshino.modules.priconne import chara_blhx，_blhx_data
 from hoshino.typing import *
 from hoshino.typing import CQEvent
 from hoshino.util import DailyNumberLimiter, concat_pic
@@ -41,19 +42,6 @@ Addgirlsuccess = [
     '你在舞会的闲聊中无意中谈到了自己显赫的家室，你成为了舞会的宠儿。',
     '没有人比你更懂舞会，每一个女孩都为你的风度倾倒。'
 ]
-
-
-def import_cdn(uri, name=None):
-    if not name:
-        name = os.path.basename(uri).lower().rstrip('.py')
-
-    r = requests.get(uri)
-    r.raise_for_status()
-
-    codeobj = compile(r.content, uri, 'exec')
-    module = imp.new_module(name)
-    exec(codeobj, module.__dict__)
-    return module
 
 
 _blhx_data = import_cdn("https://raw.githubusercontent.com/HMScygnet/_blhx_data/master/_blhx_data.py")
@@ -250,16 +238,16 @@ class ScoreCounter2:
 class DuelCounter:
     def __init__(self):
         os.makedirs(os.path.dirname(DUEL_DB_PATH), exist_ok=True)
-        self._create_charatable()
+        self._create_chara_blhxtable()
         self._create_uidtable()
         self._create_leveltable()
 
     def _connect(self):
         return sqlite3.connect(DUEL_DB_PATH)
 
-    def _create_charatable(self):
+    def _create_chara_blhxtable(self):
         try:
-            self._connect().execute('''CREATE TABLE IF NOT EXISTS CHARATABLE
+            self._connect().execute('''CREATE TABLE IF NOT EXISTS chara_blhxTABLE
                           (GID             INT    NOT NULL,
                            CID             INT    NOT NULL,
                            UID           INT    NOT NULL,
@@ -291,7 +279,7 @@ class DuelCounter:
 
     def _get_card_owner(self, gid, cid):
         try:
-            r = self._connect().execute("SELECT UID FROM CHARATABLE WHERE GID=? AND CID=?", (gid, cid)).fetchone()
+            r = self._connect().execute("SELECT UID FROM chara_blhxTABLE WHERE GID=? AND CID=?", (gid, cid)).fetchone()
             return 0 if r is None else r[0]
         except:
             raise Exception('查找角色归属发生错误')
@@ -299,14 +287,14 @@ class DuelCounter:
     def _set_card_owner(self, gid, cid, uid):
         with self._connect() as conn:
             conn.execute(
-                "INSERT OR REPLACE INTO CHARATABLE (GID, CID, UID) VALUES (?, ?, ?)",
+                "INSERT OR REPLACE INTO chara_blhxTABLE (GID, CID, UID) VALUES (?, ?, ?)",
                 (gid, cid, uid),
             )
 
     def _delete_card_owner(self, gid, cid):
         with self._connect() as conn:
             conn.execute(
-                "DELETE FROM CHARATABLE  WHERE GID=? AND CID=?",
+                "DELETE FROM chara_blhxTABLE  WHERE GID=? AND CID=?",
                 (gid, cid),
             )
 
@@ -315,7 +303,7 @@ class DuelCounter:
     def _get_card_list(self, gid):
         with self._connect() as conn:
             r = conn.execute(
-                f"SELECT CID FROM CHARATABLE WHERE GID={gid}").fetchall()
+                f"SELECT CID FROM chara_blhxTABLE WHERE GID={gid}").fetchall()
             return [c[0] for c in r] if r else {}
 
     def _get_level(self, gid, uid):
@@ -526,20 +514,20 @@ duel_judger = DuelJudger()
 
 # 随机生成一个blhx角色id
 def get_blhx_id():
-    chara_id_list = list(_blhx_data.CHARA_NAME.keys())
+    chara_blhx_id_list = list(_blhx_data.chara_blhx_NAME.keys())
     while True:
-        random.shuffle(chara_id_list)
-        if chara_id_list[0] not in BLACKLIST_ID: break
-    return chara_id_list[0]
+        random.shuffle(chara_blhx_id_list)
+        if chara_blhx_id_list[0] not in BLACKLIST_ID: break
+    return chara_blhx_id_list[0]
 
 
 # 生成没被约过的角色列表
 def get_newgirl_list(gid):
-    chara_id_list = list(_blhx_data.CHARA_NAME.keys())
+    chara_blhx_id_list = list(_blhx_data.chara_blhx_NAME.keys())
     duel = DuelCounter()
     old_list = duel._get_card_list(gid)
     new_list = []
-    for card in chara_id_list:
+    for card in chara_blhx_id_list:
         if card not in BLACKLIST_ID and card not in old_list:
             new_list.append(card)
     return new_list
@@ -687,7 +675,7 @@ async def add_noble(bot, ev: CQEvent):
             while duel._get_card_owner(gid, cid) != 0:
                 cid = get_blhx_id()
             duel._add_card(gid, uid, cid)
-            c = chara.fromid(cid)
+            c = chara_blhx.fromid(cid)
             duel._set_level(gid, uid, 1)
             msg = f'\n创建指挥官成功！\n您的初始等级为1级\n可以拥有10名舰娘。\n为您分配的初始舰娘为：{c.name}{c.icon.cqcode}'
             await bot.send(ev, msg, at_sender=True)
@@ -709,7 +697,7 @@ async def inquire_noble(bot, ev: CQEvent):
     noblename = get_noblename(level)
     girlnum = get_girlnum(level)
     score = score_counter._get_score(gid, uid)
-    charalist = []
+    chara_blhxlist = []
 
     cidlist = duel._get_cards(gid, uid)
     cidnum = len(cidlist)
@@ -728,13 +716,13 @@ async def inquire_noble(bot, ev: CQEvent):
         await bot.send(ev, msg, at_sender=True)
     else:
         for cid in cidlist:
-            charalist.append(chara.Chara(cid, 0, 0))
+            chara_blhxlist.append(chara_blhx.chara_blhx(cid, 0, 0))
         if cidnum <= 7:
 
-            res = chara.gen_team_pic(charalist, star_slot_verbose=False)
+            res = chara_blhx.gen_team_pic(chara_blhxlist, star_slot_verbose=False)
         else:
-            res1 = chara.gen_team_pic(charalist[:7], star_slot_verbose=False)
-            res2 = chara.gen_team_pic(charalist[7:], star_slot_verbose=False)
+            res1 = chara_blhx.gen_team_pic(chara_blhxlist[:7], star_slot_verbose=False)
+            res2 = chara_blhx.gen_team_pic(chara_blhxlist[7:], star_slot_verbose=False)
             res = concat_pic([res1, res2])
         bio = BytesIO()
         res.save(bio, format='PNG')
@@ -801,7 +789,7 @@ async def add_girl(bot, ev: CQEvent):
         cid = random.choice(newgirllist)
 
         duel._add_card(gid, uid, cid)
-        c = chara.fromid(cid)
+        c = chara_blhx.fromid(cid)
         wintext = random.choice(Addgirlsuccess)
         msg = f'\n{wintext}\n招募舰娘成功！\n您花费了300红尖尖\n新招募的舰娘为：{c.name}{c.icon.cqcode}'
         await bot.send(ev, msg, at_sender=True)
@@ -980,7 +968,7 @@ async def nobleduel(bot, ev: CQEvent):
     selected_girl = random.choice(cidlist)
     duel._delete_card(gid, loser, selected_girl)
     duel._add_card(gid, winner, selected_girl)
-    c = chara.fromid(selected_girl)
+    c = chara_blhx.fromid(selected_girl)
     msg = f'[CQ:at,qq={loser}]您输掉了指挥官决斗，您被抢走了舰娘\n{c.name}{c.icon.cqcode}'
     await bot.send(ev, msg)
 
@@ -1173,13 +1161,13 @@ async def search_girl(bot, ev: CQEvent):
         await bot.send(ev, '请输入查舰娘+碧蓝航线角色名。', at_sender=True)
         return
     name = args[0]
-    cid = chara.name2id(name)
+    cid = chara_blhx.name2id(name)
     if cid == 1000:
         await bot.send(ev, '请输入正确的碧蓝航线角色名。', at_sender=True)
         return
     duel = DuelCounter()
     owner = duel._get_card_owner(gid, cid)
-    c = chara.fromid(cid)
+    c = chara_blhx.fromid(cid)
 
     if owner == 0:
         await bot.send(ev, f'{c.name}现在还是单身哦，快去约到她吧。', at_sender=True)
