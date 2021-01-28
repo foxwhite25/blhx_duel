@@ -786,7 +786,7 @@ async def add_girl(bot, ev: CQEvent):
         duel._add_card(gid, uid, cid)
         c = chara_blhx.fromid(cid)
         wintext = random.choice(Addgirlsuccess)
-        msg = f'\n{wintext}\n招募舰娘成功！\n您花费了300红尖尖\n新招募的舰娘为：{c.name}{c.icon.cqcode}'
+        msg = f'\n{wintext}\n招募舰娘成功！\n您花费了{GACHA_COST}红尖尖\n新招募的舰娘为：{c.name}{c.icon.cqcode}'
         await bot.send(ev, msg, at_sender=True)
 
 
