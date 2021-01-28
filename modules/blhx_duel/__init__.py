@@ -5,9 +5,7 @@ import random
 import sqlite3
 from datetime import datetime, timedelta
 from io import BytesIO
-import importlib
 
-import requests
 from hoshino import Service, priv
 from hoshino.modules.priconne import chara_blhx，_blhx_data
 from hoshino.typing import *
