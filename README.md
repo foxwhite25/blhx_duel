@@ -144,7 +144,7 @@ res/img/blhx/tools/文件夹中的是爬虫脚本，有需要可以自行研究
 
 * []()<a href="https://github.com/Ice-Cirno/HoshinoBot/">Hoshino</a>
 * []()<a href="https://github.com/Rs794613/PcrDuel">PcrDuel</a>
-
+* []()<a href="https://github.com/HMScygnet/_blhx_data">更好质量的碧蓝航线资料</a>
 
 
 

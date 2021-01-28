@@ -6,8 +6,8 @@ import sqlite3
 from datetime import datetime, timedelta
 from io import BytesIO
 
+import requests
 from hoshino import Service, priv
-from hoshino.modules.priconne import _blhx_data
 from hoshino.modules.priconne import chara
 from hoshino.typing import *
 from hoshino.typing import CQEvent
@@ -41,6 +41,22 @@ Addgirlsuccess = [
     '你在舞会的闲聊中无意中谈到了自己显赫的家室，你成为了舞会的宠儿。',
     '没有人比你更懂舞会，每一个女孩都为你的风度倾倒。'
 ]
+
+
+def import_cdn(uri, name=None):
+    if not name:
+        name = os.path.basename(uri).lower().rstrip('.py')
+
+    r = requests.get(uri)
+    r.raise_for_status()
+
+    codeobj = compile(r.content, uri, 'exec')
+    module = imp.new_module(name)
+    exec(codeobj, module.__dict__)
+    return module
+
+
+_blhx_data = import_cdn("https://raw.githubusercontent.com/HMScygnet/_blhx_data/master/_blhx_data.py")
 
 
 # noinspection SqlResolve
