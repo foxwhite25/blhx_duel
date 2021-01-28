@@ -148,22 +148,22 @@ class Chara:
     @property
     def icon(self):
         star = '3' if 1 <= self.star <= 5 else '6'
-        res = R.img(f'priconne/unit/icon_unit_{self.id}{star}1.png')
+        res = R.img(f'blhx/unit/icon_unit_{self.id}{star}1.png')
         if not res.exist:
-            res = R.img(f'priconne/unit/icon_unit_{self.id}31.png')
+            res = R.img(f'blhx/unit/icon_unit_{self.id}31.png')
         if not res.exist:
-            res = R.img(f'priconne/unit/icon_unit_{self.id}11.png')
+            res = R.img(f'blhx/unit/icon_unit_{self.id}11.png')
         if not res.exist:
             download_chara_icon(self.id, 6)
             download_chara_icon(self.id, 3)
             download_chara_icon(self.id, 1)
-            res = R.img(f'priconne/unit/icon_unit_{self.id}{star}1.png')
+            res = R.img(f'blhx/unit/icon_unit_{self.id}{star}1.png')
         if not res.exist:
-            res = R.img(f'priconne/unit/icon_unit_{self.id}31.png')
+            res = R.img(f'blhx/unit/icon_unit_{self.id}31.png')
         if not res.exist:
-            res = R.img(f'priconne/unit/icon_unit_{self.id}11.png')
+            res = R.img(f'blhx/unit/icon_unit_{self.id}11.png')
         if not res.exist:
-            res = R.img(f'priconne/unit/icon_unit_{UNKNOWN}31.png')
+            res = R.img(f'blhx/unit/icon_unit_{UNKNOWN}31.png')
         return res
 
     def render_icon(self, size, star_slot_verbose=True) -> Image:

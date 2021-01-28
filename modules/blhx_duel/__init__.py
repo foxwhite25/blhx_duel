@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from io import BytesIO
 
 from hoshino import Service, priv
-from hoshino.modules.priconne import chara_blhx，_blhx_data
+from hoshino.modules.priconne import chara_blhx,_blhx_data
 from hoshino.typing import *
 from hoshino.typing import CQEvent
 from hoshino.util import DailyNumberLimiter, concat_pic
@@ -509,7 +509,7 @@ duel_judger = DuelJudger()
 
 # 随机生成一个blhx角色id
 def get_blhx_id():
-    chara_blhx_id_list = list(_blhx_data.chara_blhx_NAME.keys())
+    chara_blhx_id_list = list(_blhx_data.CHARA_NAME.keys())
     while True:
         random.shuffle(chara_blhx_id_list)
         if chara_blhx_id_list[0] not in BLACKLIST_ID: break
@@ -518,7 +518,7 @@ def get_blhx_id():
 
 # 生成没被约过的角色列表
 def get_newgirl_list(gid):
-    chara_blhx_id_list = list(_blhx_data.chara_blhx_NAME.keys())
+    chara_blhx_id_list = list(_blhx_data.CHARA_NAME.keys())
     duel = DuelCounter()
     old_list = duel._get_card_list(gid)
     new_list = []
