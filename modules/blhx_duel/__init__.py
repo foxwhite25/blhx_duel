@@ -187,11 +187,12 @@ class ScoreCounter2:
         try:
             current_score = self._get_score(gid, uid)
             conn = self._connect()
+            print(type(current_score),type(score))
             conn.execute("INSERT OR REPLACE INTO SCORECOUNTER (GID,UID,SCORE) \
                                 VALUES (?,?,?)", (gid, uid, current_score + score))
             conn.commit()
         except:
-            raise Exception('更新表发生错误')
+            raise Exception("更新表发生错误")
 
     def _reduce_score(self, gid, uid, score):
         try:
@@ -762,7 +763,7 @@ async def add_girl(bot, ev: CQEvent):
             await bot.send(ev, msg, at_sender=True)
             return
         score = score_counter._get_score(gid, uid)
-        if score < {GACHA_COST}:
+        if score < GACHA_COST:
             msg = '您的红尖尖不足{GACHA_COST}哦。'
             await bot.send(ev, msg, at_sender=True)
             return
@@ -771,7 +772,7 @@ async def add_girl(bot, ev: CQEvent):
         if len(newgirllist) == 0:
             await bot.send(ev, '这个群已经没有可以约到的新舰娘了哦。', at_sender=True)
             return
-        score_counter._reduce_score(gid, uid, {GACHA_COST})
+        score_counter._reduce_score(gid, uid, GACHA_COST)
 
         # 招募舰娘失败
         if random.random() < 0.4:
@@ -1094,7 +1095,7 @@ async def add_score(bot, ev: CQEvent):
 
         current_score = score_counter._get_score(gid, uid)
         if current_score == 0:
-            score_counter._add_score(gid, uid, {ZERO_GET_AMOUNT})
+            score_counter._add_score(gid, uid, ZERO_GET_AMOUNT)
             msg = f'您已领取{ZERO_GET_AMOUNT}红尖尖'
             await bot.send(ev, msg, at_sender=True)
             return
