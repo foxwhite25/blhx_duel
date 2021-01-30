@@ -711,7 +711,7 @@ async def inquire_noble(bot, ev: CQEvent):
         await bot.send(ev, msg, at_sender=True)
     else:
         for cid in cidlist:
-            chara_blhxlist.append(chara_blhx.chara(cid, 0, 0))
+            chara_blhxlist.append(chara_blhx.Chara(cid, 0, 0))
         if cidnum <= 7:
 
             res = chara_blhx.gen_team_pic(chara_blhxlist, star_slot_verbose=False)
